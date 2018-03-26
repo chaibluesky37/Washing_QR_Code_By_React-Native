@@ -21,6 +21,7 @@ export default class RegisterForm extends Component {
             telReg : '0000000000',
             userID : '',
             CashID : '',
+            cash : '',
             TotalUs : 0,
             errorsReg : {
                 emailReg : '',
@@ -56,10 +57,12 @@ export default class RegisterForm extends Component {
                 Firebase.database().ref('Customer/' + userId).set({
                     UserID : this.state.TotalUs,
                     CashID : this.state.TotalUs,
+                    Cash : 0,
                     Name : this.state.nameReg,
                     Email : this.state.emailReg ,
                     Password : this.state.rePasswordReg,
-                    Tel : this.state.telReg
+                    Tel : this.state.telReg,
+                    Machine : 'non'
                 });
                 newus = {
                     TotalUs : this.state.TotalUs

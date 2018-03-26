@@ -1,141 +1,185 @@
-import React, { Component } from 'react';
+import React,{ Component } from 'react';
 import {
-  Alert,
-  Linking,
-  Dimensions,
-  LayoutAnimation,
-  Text,
-  View,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import { Actions } from 'react-native-router-flux';
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    TextInput,
+    StatusBar,
+    Alert,
+    } from 'react-native';
 import { BarCodeScanner, Permissions } from 'expo';
+import { Actions } from 'react-native-router-flux';
+import Firebase from 'firebase';
 
-export default class PayForm extends Component {
-  state = {
-    hasCameraPermission: null,
-    lastScannedUrl: null,
-  };
+export default class PayForm extends React.Component {
+    constructor(props) {
+        super(props);
+        userId = Firebase.auth().currentUser.uid;
+        this.QRMC_1 = Firebase.database().ref().child('Machine/MC_1');
+        this.QRMC_2 = Firebase.database().ref().child('Machine/MC_2');
+        this.state = {
+            MC_1 : null,
+            MC_2 : null,
+            hasCameraPermission: null,
+            statusbar : 'Please Scan QR code',
+        };
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.after_scanned = this.after_scanned.bind(this);
+        this.washing = this.washing.bind(this);
+    };
 
-  componentDidMount() {
-    this._requestCameraPermission();
-  }
-
-  _requestCameraPermission = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({
-      hasCameraPermission: status === 'granted',
-    });
-  };
-
-  _handleBarCodeRead = result => {
-    if (result.data !== this.state.lastScannedUrl) {
-      LayoutAnimation.spring();
-      this.setState({ lastScannedUrl: result.data });
+    componentDidMount(){
+        this.QRMC_1.on('value',snap =>{
+            this.setState({
+                MC_1 : snap.val()
+            });
+        });
+        this.QRMC_2.on('value',snap =>{
+            this.setState({
+                MC_2 : snap.val()
+            });
+        });
     }
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-
-        {this.state.hasCameraPermission === null
-          ? <Text>Requesting for camera permission</Text>
-          : this.state.hasCameraPermission === false
-              ? <Text style={{ color: '#fff' }}>
-                  Camera permission is not granted
-                </Text>
-              : <BarCodeScanner
-                  onBarCodeRead={this._handleBarCodeRead}
-                  style={{
-                    height: Dimensions.get('window').height,
-                    width: Dimensions.get('window').width,
-                  }}
-                />}
-
-        {this._maybeRenderUrl()}
-
-        <StatusBar hidden />
-      </View>
-    );
-  }
-
-  _handlePressUrl = () => {
-    Alert.alert(
-      'Open this URL?',
-      this.state.lastScannedUrl,
-      [
-        {
-          text: 'Yes',
-          onPress: () => Linking.openURL(this.state.lastScannedUrl),
-        },
-        { text: 'No', onPress: () => {} },
-      ],
-      { cancellable: false }
-    );
-  };
-
-  _handlePressCancel = () => {
-    this.setState({ lastScannedUrl: null });
-  };
-
-  _maybeRenderUrl = () => {
-    if (!this.state.lastScannedUrl) {
-      return;
+    
+    async componentWillMount() {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        this.setState({hasCameraPermission: status === 'granted'});
+    }
+    after_scanned() {
+        if(this.state.statusbar != 'Please Scan QR code'){
+            if(this.state.statusbar == this.state.MC_1) {
+                Alert.alert(
+                    'Are you sure ?',
+                    'You want to wash "' + this.state.MC_1 + ' " ?',
+                    [
+                        {text: 'OK', onPress: ()=> this.washing()},
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                    ],
+                    { cancelable: false }
+                )
+            }
+            else if(this.state.statusbar == this.state.MC_2) {
+                Alert.alert(
+                    'Are you sure ?',
+                    'You want to booking "' + this.state.MC_2 + ' " ?',
+                    [
+                        {text: 'OK', onPress: () => this.washing()},
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                    ],
+                    { cancelable: false }
+                )
+            }
+            else {
+                alert('QR code does not match database in system or have used this service.');
+            }
+        }
+        else {
+            alert('You have not scanned the QR Code.');
+        }
+        
     }
 
-    return (
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.url} onPress={this._handlePressUrl}>
-          <Text numberOfLines={1} style={styles.urlText}>
-            {this.state.lastScannedUrl}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={this._handlePressCancel}>
-          <Text style={styles.cancelButtonText}>
-            Cancel
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-}
+    washing() {
+        if(this.state.statusbar == this.state.MC_1) {
+            Firebase.database().ref('Customer/'+userId).update({
+                Machine : 'MC_1_ON',
+            });
+            Firebase.database().ref('Machine').update({
+                MC_1 : 'Running',
+            });
+        }
+        else if(this.state.statusbar == this.state.MC_2) {
+            Firebase.database().ref('Customer/'+userId).update({
+                 Machine : 'MC_2_ON',
+            });
+            Firebase.database().ref('Machine').update({
+                MC_2 : 'Running',
+            });
+        }
+        Actions.reset("main");
+    }
+    
+    render() {
+        const { hasCameraPermission } = this.state;
+    
+        if (hasCameraPermission === null) {
+            return <Text style={styles.container}>Requesting for camera permission</Text>;
+        } else if (hasCameraPermission === false) {
+            return <Text style={styles.container}>No access to camera</Text>;
+        } else {
+            return (
+            <View style={styles.container}>
+                {/* <StatusBar hidden/> */}
+                <Text style={styles.title}>Scan QR Code</Text>
+                <BarCodeScanner
+                    onBarCodeRead={this._handleBarCodeRead}
+                    type={'back'}
+                    style={{width : '90%' , height : '60%'}}
+                />
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => this.after_scanned()}
+                >
+                    <Text style={styles.buttonText}>{this.state.statusbar}</Text>   
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => Actions.pop()}
+                >
+                    <Text style={styles.title}>Cancel</Text>
+                </TouchableOpacity>
+            </View>
+            );
+        }
+    }
+    
+    _handleBarCodeRead = ({ type, data }) => {
+        this.setState({ statusbar: data })
+        
+        
+    }
+} 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#000',
-  },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 15,
-    flexDirection: 'row',
-  },
-  url: {
-    flex: 1,
-  },
-  urlText: {
-    color: '#fff',
-    fontSize: 20,
-  },
-  cancelButton: {
-    marginLeft: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cancelButtonText: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 18,
-  },
-});
-
+    container: {
+        marginTop : 20,
+        backgroundColor : '#708090' ,
+        justifyContent : 'center', 
+        alignItems : 'center',
+        flex : 1,
+    },
+    title: {
+        fontSize: 28,
+        //fontWeight: 'bold',
+        color : '#F5FFFA',
+    },
+    textInput: {
+        height : 42 ,
+        width : 300,
+        backgroundColor : '#F8F8FF',
+        borderRadius : 20,
+        marginVertical : 3,
+        paddingLeft : 15,
+        fontSize : 17,
+    },
+    buttonText: {
+        fontSize : 18,
+        fontWeight : '500',
+        color : 'white',
+        padding : 10,
+    },
+    button: {
+        marginVertical : 25,
+        backgroundColor : '#4682B4',
+        borderRadius : 30,
+        width : 220,
+        height : 50,
+        alignItems : 'center',
+        justifyContent : 'center'
+    },
+    alertText: {
+        color : '#660000',
+        fontSize : 14
+    }
+  });

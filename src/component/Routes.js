@@ -15,7 +15,7 @@ class Routes extends Component {
             <Router>
                 <Stack key="root" hideNavBar={ true }>
                     <Scene key="login" component={ LoginPage } title="Login" initial={ true }/>
-                    <Scene key="main" component={ HomePage } title="My Locker" />
+                    <Scene key="main" component={ HomePage } title="w_washing" />
                     <Scene key="register" component={ RegisterPage } title="Register"/>
                     <Scene key="profile" component={ ProfilePage } title="Profile"/>
                     <Scene key="cash" component={ CashPage } title="Cash"/>
