@@ -23,6 +23,9 @@ class washing extends Component {
     pay(){
         Actions.pay();
     }
+    statusck(){
+        Actions.status();
+    }
 
     render() {
         return(
@@ -43,6 +46,13 @@ class washing extends Component {
                     onPress={this.cash}
                 >
                      <Text style={styles.buttonText}>Cash</Text>  
+                </TouchableOpacity>
+    {/* status*/}    
+    <TouchableOpacity
+                    style = {styles.button}
+                    onPress={this.statusck}
+                >
+                     <Text style={styles.buttonText}>Machine Status</Text>  
                 </TouchableOpacity>
     {/* Pay*/} 
                 <TouchableOpacity
