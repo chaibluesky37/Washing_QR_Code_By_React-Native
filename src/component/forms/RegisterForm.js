@@ -5,6 +5,7 @@ import {
     Text,
     StyleSheet,
     TextInput,
+    Image,
 } from 'react-native';
 import Firebase from 'firebase';
 import { Actions } from 'react-native-router-flux';
@@ -118,9 +119,10 @@ export default class RegisterForm extends Component {
         return(
             <View style={styles.container}>
                 <View style={{alignItems : 'center',justifyContent: 'center'}}> 
-                    <Text style={styles.title}>
-                        QR Washing
-                    </Text>
+                    <Image 
+                        style={{width: 100, height: 100}}
+                        source={require('../../images/LoginLogo.png')}
+                    />
                     <Text style={{marginVertical : 15, color:'#778899'}}>
                         Register account by Firebase
                     </Text>
@@ -184,7 +186,7 @@ export default class RegisterForm extends Component {
 const styles = StyleSheet.create({
     container: {
         marginTop : 20,
-        backgroundColor : '#3abeea' ,
+        backgroundColor : '#44372E' ,
         justifyContent : 'center', 
         alignItems : 'center',
         flex : 1,
@@ -211,7 +213,7 @@ const styles = StyleSheet.create({
     },
     button: {
         marginVertical : 25,
-        backgroundColor : '#4682B4',
+        backgroundColor : '#E75D3F',
         borderRadius : 30,
         width : 220,
         height : 50,

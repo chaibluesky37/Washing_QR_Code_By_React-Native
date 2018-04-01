@@ -5,6 +5,7 @@ import {
     Text,
     StyleSheet,
     TextInput,
+    Image,
 } from 'react-native';
 import Firebase from 'firebase';
 import { Actions } from 'react-native-router-flux';
@@ -30,9 +31,10 @@ class CashForm extends Component{
     render(){
         return(
             <View  style={styles.itemp}>
-                <Text style={styles.titlepf}> 
-                    ยอดเงินคงเหลือ
-                </Text>
+                <Image 
+                    style={{width: 200, height: 210, marginTop : 20}}
+                    source={require('../../images/2.png')}
+                />
                 <Text style={styles.text}>
                     {this.state.cash}
                 </Text>
@@ -42,11 +44,15 @@ class CashForm extends Component{
 }export default CashForm
 const styles = StyleSheet.create({
     text: {
-        fontSize : 20,
+        fontSize : 50,
         alignItems : 'center',
+        color : '44372E',
     },
     itemp : {
         alignItems : 'center',
+        flex : 1,
+        marginTop : 20,
+        backgroundColor : '#FBA448' ,
         
     },
     titlepf : {

@@ -7,11 +7,12 @@ import {
     TextInput,
     StatusBar,
     Alert,
+    Image,
     } from 'react-native';
-import { BarCodeScanner, Permissions } from 'expo';
+import { BarCodeScanner, Permissions, Notifications, Constants } from 'expo';
 import { Actions } from 'react-native-router-flux';
 import Firebase from 'firebase';
-
+import moment from 'moment';
 export default class PayForm extends React.Component {
     constructor(props) {
         super(props);
@@ -29,7 +30,8 @@ export default class PayForm extends React.Component {
         this.washing = this.washing.bind(this);
     };
 
-    componentDidMount(){
+    async componentDidMount(){
+        let result = await Permissions.askAsync(Permissions.NOTIFICATIONS);
         this.QRMC_1.on('value',snap =>{
             this.setState({
                 MC_1 : snap.val()
@@ -40,7 +42,19 @@ export default class PayForm extends React.Component {
                 MC_2 : snap.val()
             });
         });
+        if (Constants.isDevice && result.status === 'granted') {
+            console.log('Notification permissions granted.')
+          }
+      
+          Notifications.addListener(this._handleNotification);
+        }
+      
+        // Private methods
+      
+        _handleNotification = ({ origin, data }) => {
+          console.info(`Notification (${origin}) with data: ${JSON.stringify(data)}`)
     }
+    
     
     async componentWillMount() {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -62,7 +76,7 @@ export default class PayForm extends React.Component {
             else if(this.state.statusbar == this.state.MC_2) {
                 Alert.alert(
                     'Are you sure ?',
-                    'You want to booking "' + this.state.MC_2 + ' " ?',
+                    'You want to wash "' + this.state.MC_2 + ' " ?',
                     [
                         {text: 'OK', onPress: () => this.washing()},
                         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
@@ -97,6 +111,24 @@ export default class PayForm extends React.Component {
                 MC_2 : 'Running',
             });
         }
+        const localNotification = {
+            title: 'Wash Wear',
+            body: 'Waching Complete',
+            data: { type: 'delayed' },
+            vibrate: [ 1, 500 ],
+            android: {
+              sound: true
+            }
+          }
+          const schedulingOptions = {
+            time: (new Date()).getTime() + 5000
+          }
+      
+          console.log('Scheduling delayed notification:', { localNotification, schedulingOptions })
+      
+          Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
+            .then(id => console.info(`Delayed notification scheduled (${id}) at ${moment(schedulingOptions.time).format()}`))
+            .catch(err => console.error(err))
         Actions.reset("main");
     }
     
@@ -111,7 +143,10 @@ export default class PayForm extends React.Component {
             return (
             <View style={styles.container}>
                 {/* <StatusBar hidden/> */}
-                <Text style={styles.title}>Scan QR Code</Text>
+                <Image 
+                    style={{width: 250, height: 85}}
+                    source={require('../../images/4.png')}
+                />
                 <BarCodeScanner
                     onBarCodeRead={this._handleBarCodeRead}
                     type={'back'}
@@ -143,8 +178,8 @@ export default class PayForm extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop : 20,
-        backgroundColor : '#708090' ,
+        marginTop : 40,
+        backgroundColor : '#F26C4F' ,
         justifyContent : 'center', 
         alignItems : 'center',
         flex : 1,

@@ -3,7 +3,8 @@ import {
     Text,
     View,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    Image,
 } from 'react-native';
 import Firebase from 'firebase';
 import { Actions } from 'react-native-router-flux';
@@ -30,36 +31,49 @@ class washing extends Component {
     render() {
         return(
             <View style={styles.container}>
-                <Text style={styles.title}>
-                    Welcome
-                </Text>
+                 <Image 
+                    style={{width: 100, height: 100}}
+                    source={require('../images/LoginLogo.png')}
+                />
     {/* Profile*/}
                 <TouchableOpacity
                     style={styles.button}
                     onPress={this.profile}
                 >
-                     <Text style={styles.buttonText}>Profile</Text>  
+                     <Image 
+                        style={{width: 250, height: 85}}
+                        source={require('../images/profile.png')}
+                    />
                 </TouchableOpacity>
     {/* Cash*/}    
                 <TouchableOpacity
                     style = {styles.button}
                     onPress={this.cash}
                 >
-                     <Text style={styles.buttonText}>Cash</Text>  
+                     <Image 
+                        style={{width: 250, height: 85}}
+                        source={require('../images/cash.png')}
+                    />  
                 </TouchableOpacity>
     {/* status*/}    
     <TouchableOpacity
                     style = {styles.button}
                     onPress={this.statusck}
                 >
-                     <Text style={styles.buttonText}>Machine Status</Text>  
+                     <Image 
+                        style={{width: 250, height: 85}}
+                        source={require('../images/status.png')}
+                    />   
                 </TouchableOpacity>
     {/* Pay*/} 
                 <TouchableOpacity
                     style = {styles.button}
                      onPress={this.pay}
                 >
-                     <Text style={styles.buttonText}>Pay</Text>  
+                     <Image 
+                        style={{width: 250, height: 85}}
+                        source={require('../images/pay.png')}
+                    />  
                 </TouchableOpacity>
     {/* Cash*/}    
                   <TouchableOpacity
@@ -80,7 +94,7 @@ class washing extends Component {
 const styles = StyleSheet.create({
     container: {
         marginTop : 20,
-        backgroundColor : '#3abeea' ,
+        backgroundColor : '#44372E' ,
         justifyContent : 'center', 
         alignItems : 'center',
         flex : 1,
@@ -92,11 +106,8 @@ const styles = StyleSheet.create({
         padding : 10,
     },
     button: {
-        marginVertical : 25,
-        backgroundColor : '#34eda6',
+        marginVertical : 3,
         borderRadius : 30,
-        width : 220,
-        height : 60,
         alignItems : 'center',
         justifyContent : 'center'
     },

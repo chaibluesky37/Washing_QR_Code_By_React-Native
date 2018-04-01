@@ -5,6 +5,7 @@ import {
     Text,
     StyleSheet,
     TextInput,
+    Image,
 } from 'react-native';
 import Firebase from 'firebase';
 import { Actions } from 'react-native-router-flux';
@@ -50,9 +51,10 @@ class ProfileForm extends Component{
     render() {
         return(
             <View  style={styles.itemp}>
-                <Text style={styles.titlepf}> 
-                    Profile
-                </Text>
+                <Image 
+                    style={{width: 200, height: 210, marginTop : 20}}
+                    source={require('../../images/1.png')}
+                />
                 <Text style={styles.text}>
                     name : {this.state.name}
                 </Text>
@@ -71,9 +73,14 @@ const styles = StyleSheet.create({
     text: {
         fontSize : 20,
         alignItems : 'center',
+        color : '44372E',
+
     },
     itemp : {
         alignItems : 'center',
+        flex : 1,
+        marginTop : 20,
+        backgroundColor : '#FFF568' ,
         
     },
     titlepf : {
