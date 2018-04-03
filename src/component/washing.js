@@ -18,7 +18,7 @@ class washing extends Component {
     }
     signOutUser(){
         Firebase.auth().signOut();
-        Actions.pop();
+        Actions.reset("login");
        
     }
     pay(){

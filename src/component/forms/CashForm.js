@@ -18,6 +18,7 @@ class CashForm extends Component{
             cash : null,
         };
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.prepaid = this.prepaid.bind(this);
 
     }
     componentDidMount(){
@@ -27,6 +28,9 @@ class CashForm extends Component{
                 
             });
         });
+    }
+    prepaid(){
+        Actions.prepaid();
     }
     render(){
         return(
@@ -38,6 +42,12 @@ class CashForm extends Component{
                 <Text style={styles.text}>
                     {this.state.cash}
                 </Text>
+                <TouchableOpacity
+                    style = {styles.button}
+                    onPress={this.prepaid}
+                >
+                     <Text style={styles.buttonText}>เติมเงิน</Text>  
+                </TouchableOpacity>
             </View>
         );
     }
@@ -54,6 +64,15 @@ const styles = StyleSheet.create({
         marginTop : 20,
         backgroundColor : '#FBA448' ,
         
+    },
+    button: {
+        marginVertical : 36,
+        backgroundColor : '#E75D3F',
+        borderRadius : 30,
+        width : 220,
+        height : 50,
+        alignItems : 'center',
+        justifyContent : 'center'
     },
     titlepf : {
         fontSize : 24,

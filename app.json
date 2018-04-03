@@ -1,5 +1,12 @@
 {
   "expo": {
-    "sdkVersion": "25.0.0"
+    "name": "Wash Wear",
+    "icon": "./src/images/Icon_Logo.png",
+    "version": "1.0.0",
+    "slug": "Wash-Wear-slug",
+    "sdkVersion": "25.0.0",
+    "android": {
+      "package": "chai.chaigg.washwear"
+    }
   }
 }

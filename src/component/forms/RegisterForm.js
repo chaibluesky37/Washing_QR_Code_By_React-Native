@@ -15,11 +15,11 @@ export default class RegisterForm extends Component {
         super(props);
         this.Users = Firebase.database().ref().child('TotalUs');
         this.state = {
-            emailReg : 'cccc@gmail.com',
-            passwordReg : '123456789',
-            rePasswordReg : '123456789',
-            nameReg : 'chaiwattest',
-            telReg : '0000000000',
+            emailReg : '',
+            passwordReg : '',
+            rePasswordReg : '',
+            nameReg : '',
+            telReg : '',
             userID : '',
             CashID : '',
             cash : '',

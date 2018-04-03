@@ -17,8 +17,8 @@ class LoginForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: 'dota2@gmail.com' ,
-            password: '123456789',
+            email: '' ,
+            password: '',
             errors: {
                 email: '',
                 password: '',

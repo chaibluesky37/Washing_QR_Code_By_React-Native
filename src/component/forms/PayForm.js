@@ -17,11 +17,13 @@ export default class PayForm extends React.Component {
     constructor(props) {
         super(props);
         userId = Firebase.auth().currentUser.uid;
+        this.cash = Firebase.database().ref().child('Customer/'+userId+'/Cash');
         this.QRMC_1 = Firebase.database().ref().child('Machine/MC_1');
         this.QRMC_2 = Firebase.database().ref().child('Machine/MC_2');
         this.state = {
             MC_1 : null,
             MC_2 : null,
+            cash : null,
             hasCameraPermission: null,
             statusbar : 'Please Scan QR code',
         };
@@ -40,6 +42,12 @@ export default class PayForm extends React.Component {
         this.QRMC_2.on('value',snap =>{
             this.setState({
                 MC_2 : snap.val()
+            });
+        });
+        this.cash.on('value',snap =>{
+            this.setState({
+                cash : snap.val()
+                
             });
         });
         if (Constants.isDevice && result.status === 'granted') {
@@ -95,41 +103,69 @@ export default class PayForm extends React.Component {
     }
 
     washing() {
-        if(this.state.statusbar == this.state.MC_1) {
+        if(this.state.statusbar == this.state.MC_1 && this.state.cash>=30) {
             Firebase.database().ref('Customer/'+userId).update({
                 Machine : 'MC_1_ON',
             });
             Firebase.database().ref('Machine').update({
                 MC_1 : 'Running',
             });
+            Firebase.database().ref('Customer/'+userId).update({
+                Cash : this.state.cash-30,
+            });
+            const localNotification = {
+                title: 'Wash Wear',
+                body: 'Waching Complete',
+                data: { type: 'delayed' },
+                vibrate: [ 1, 500 ],
+                android: {
+                  sound: true
+                }
+              }
+              const schedulingOptions = {
+                time: (new Date()).getTime() + 3900000
+              }
+          
+              console.log('Scheduling delayed notification:', { localNotification, schedulingOptions })
+          
+              Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
+                .then(id => console.info(`Delayed notification scheduled (${id}) at ${moment(schedulingOptions.time).format()}`))
+                .catch(err => console.error(err))
+            Actions.reset("main");
         }
-        else if(this.state.statusbar == this.state.MC_2) {
+        else if(this.state.statusbar == this.state.MC_2 && this.state.cash>=30) {
             Firebase.database().ref('Customer/'+userId).update({
                  Machine : 'MC_2_ON',
             });
             Firebase.database().ref('Machine').update({
                 MC_2 : 'Running',
             });
+            Firebase.database().ref('Customer/'+userId).update({
+                Cash : this.state.cash-30,
+            });
+            const localNotification = {
+                title: 'Wash Wear',
+                body: 'Waching Complete',
+                data: { type: 'delayed' },
+                vibrate: [ 1, 500 ],
+                android: {
+                  sound: true
+                }
+              }
+              const schedulingOptions = {
+                time: (new Date()).getTime() + 3900000
+              }
+          
+              console.log('Scheduling delayed notification:', { localNotification, schedulingOptions })
+          
+              Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
+                .then(id => console.info(`Delayed notification scheduled (${id}) at ${moment(schedulingOptions.time).format()}`))
+                .catch(err => console.error(err))
+            Actions.reset("main");
+        }else{
+            alert('Unknown machine Or Not enough money');
+
         }
-        const localNotification = {
-            title: 'Wash Wear',
-            body: 'Waching Complete',
-            data: { type: 'delayed' },
-            vibrate: [ 1, 500 ],
-            android: {
-              sound: true
-            }
-          }
-          const schedulingOptions = {
-            time: (new Date()).getTime() + 5000
-          }
-      
-          console.log('Scheduling delayed notification:', { localNotification, schedulingOptions })
-      
-          Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
-            .then(id => console.info(`Delayed notification scheduled (${id}) at ${moment(schedulingOptions.time).format()}`))
-            .catch(err => console.error(err))
-        Actions.reset("main");
     }
     
     render() {
